@@ -5,18 +5,18 @@ UI::UI(float windowWidth, float windowHeight)
       windowHeight(windowHeight),
       maxHealth(100),
       currentHealth(100) {
-    // Initialize health bar
+    
     healthBarBackground.setSize(sf::Vector2f(200.f, 20.f));
-    healthBarBackground.setFillColor(sf::Color(50, 50, 50)); // Gray background
+    healthBarBackground.setFillColor(sf::Color(50, 50, 50));
     healthBarBackground.setPosition(10.f, 10.f);
 
     healthBar.setSize(sf::Vector2f(200.f, 20.f));
-    healthBar.setFillColor(sf::Color::Green); // Green health bar
+    healthBar.setFillColor(sf::Color::Green); 
     healthBar.setPosition(10.f, 10.f);
 
-    // Initialize weapon display
+   
     weaponDisplayBackground.setSize(sf::Vector2f(40.f, 40.f));
-    weaponDisplayBackground.setFillColor(sf::Color(100, 100, 100)); // Gray background
+    weaponDisplayBackground.setFillColor(sf::Color(100, 100, 100)); 
     weaponDisplayBackground.setOutlineThickness(2.f);
     weaponDisplayBackground.setOutlineColor(sf::Color::White);
 	weaponDisplayBackground.setPosition(sf::Vector2f(windowWidth - 108.f, 40.f));
@@ -47,11 +47,10 @@ void UI::updateHealthBar() {
 }
 
 void UI::draw(sf::RenderWindow& window) const {
-    // Draw health bar
+    
     window.draw(healthBarBackground);
     window.draw(healthBar);
 
-    // Draw weapon display
     window.draw(weaponDisplayBackground);
     if (weaponSprite.getTexture() != nullptr) { 
         window.draw(weaponSprite);

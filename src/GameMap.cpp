@@ -8,7 +8,7 @@ GameMap::GameMap(int width, int height, int tileSize,  sf::Texture& texture)
     : width(width), height(height), tileSize(tileSize), texture(texture) {
     mapData.resize(height, std::vector<int>(width, 0));
 
-    // Генерация карты острова по умолчанию
+    // Генерация карты острова 
     for (int x = 0; x < width; ++x) {
         mapData[0][x] = 1;
         mapData[height - 1][x] = 1;
@@ -46,7 +46,7 @@ void GameMap::loadDungeonTexture(const std::string& filePath) {
 
 void GameMap::draw(sf::RenderWindow& window) const {
     if (isDungeon) {
-        // Разбиваем dungeonSprite на тайлы и учитываем смещение
+        // Разбиваем dungeonSprite на тайлы и смещаем 
         sf::Sprite sprite(dungeonTexture);
 
         int dungeonWidth = dungeonTexture.getSize().x / tileSize;
@@ -134,88 +134,4 @@ sf::Image GameMap::getImage() const{
 
 // void GameMap::setDungeons(std::vector<std::unique_ptr<Dungeon>> dungeons) {
 //     this->dungeons = dungeons;
-// }
-
-
-// #include "../headers/GameMap.hpp"
-
-// GameMap::GameMap(int width, int height, int tileSize, const sf::Texture& texture)
-//     : width(width), height(height), tileSize(tileSize), texture(texture) {
-//     mapData.resize(height, std::vector<int>(width, 0));
-//     // Заполнение краев непроходимыми клетками
-//     for (int x = 0; x < width; ++x) {
-//         mapData[0][x] = 1; // Верхний край
-//         mapData[height - 1][x] = 1; // Нижний край
-//     }
-//     for (int y = 0; y < height; ++y) {
-//         mapData[y][0] = 1; // Левый край
-//         mapData[y][width - 1] = 1; // Правый край
-//     }
-
-//     // Генерация случайных значений для остальных клеток
-//     std::srand(static_cast<unsigned int>(std::time(nullptr))); // Инициализация генератора случайных чисел
-//     for (int y = 1; y < height - 1; ++y) {
-//         for (int x = 1; x < width - 1; ++x) {
-//             mapData[y][x] = std::rand() % 2; // Генерация 0 или 1 (0 - проходимая клетка, 1 - непроходимая)
-//         }
-//     }
-// }
-// // bool GameMap::checkCollision(const sf::Sprite& sprite) const {
-// //     // Пример проверки столкновения с картой
-// //     for (int y = 0; y < height; ++y) {
-// //         for (int x = 0; x < width; ++x) {
-// //             if (mapData[y][x] != 0) {
-// //                 sf::FloatRect tileBounds(x * tileSize + 24, y * tileSize + 42 , 1, 1 );
-// //                 if (sprite.getGlobalBounds().intersects(tileBounds)) {
-// //                     return true; // Столкновение
-// //                 }
-// //             }
-// //         }
-// //     }
-// //     return false; // Нет столкновения
-// // }
-
-// void GameMap::draw(sf::RenderWindow& window) const {
-//     sf::Sprite sprite; // Объявляем спрайт здесь
-//     sprite.setTexture(texture);
-
-//     // Сначала отрисовываем плитки
-//     for (int y = 0; y < height; ++y) {
-//         for (int x = 0; x < width; ++x) {
-//             sprite.setPosition(x * tileSize - offsetX, y * tileSize - offsetY);
-            
-//             // Установите текстурный прямоугольник в зависимости от типа тайла
-//             switch (mapData[y][x]) {
-//                 case 0: // Проходимая клетка (трава)
-//                     sprite.setTextureRect(sf::IntRect(56, 0, 16, 16)); // Координаты и размеры для травы
-//                     sprite.setScale(4.0f, 4.0f); // Увеличиваем размер спрайта травы
-//                     window.draw(sprite); // Отрисовываем траву
-//                     break;
-//                 case 1: // Непроходимая клетка (дерево)
-//                     // Не отрисовываем дерево здесь, так как мы будем делать это позже
-//                     break;
-//                 // Добавьте дополнительные типы объектов здесь
-//                 default:
-//                     break;
-//             }
-//         }
-//     }
-
-//     // Теперь отрисовываем объекты, такие как деревья
-//     for (int y = 0; y < height; ++y) {
-//         for (int x = 0; x < width; ++x) {
-//             sprite.setPosition(x * tileSize - offsetX, y * tileSize - offsetY);
-            
-//             switch (mapData[y][x]) {
-//                 case 1: // Непроходимая клетка (дерево)
-//                     sprite.setTextureRect(sf::IntRect(0, 0, 48, 64)); // Координаты и размеры для дерева
-//                     sprite.setScale(1.0f, 1.0f); // Оставляем размер дерева без изменений
-//                     window.draw(sprite); // Отрисовываем дерево
-//                     break;
-//                 // Добавьте дополнительные типы объектов здесь
-//                 default:
-//                     break;
-//             }
-//         }
-//     }
 // }

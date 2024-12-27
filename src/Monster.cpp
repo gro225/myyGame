@@ -99,7 +99,7 @@ void Monster::takeDamage(int damage, float deltaTime) {
 }
 
 int Monster::getAttackPower() const {
-    return attackPower;  // Вернуть значение силы атаки
+    return attackPower;  
 }
 
 AnimationState Monster::getCurrentAnimation() const {

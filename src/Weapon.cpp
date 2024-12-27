@@ -15,10 +15,10 @@ void Weapon::draw(sf::RenderTarget& window, const sf::Vector2f& position) {
 void Weapon::updatePosition(const sf::Vector2f& characterPosition, bool facingRight) {
     if (facingRight) {
         weaponSprite.setPosition(sf::Vector2f(characterPosition.x + 20.f, characterPosition.y + 10.f));
-        weaponSprite.setScale(1.5f, 1.5f); // Обычный масштаб
+        weaponSprite.setScale(1.5f, 1.5f); 
     } else {
         weaponSprite.setPosition(sf::Vector2(characterPosition.x - 20.f, characterPosition.y + 10.f));
-        weaponSprite.setScale(-1.5f, 1.5f); // Отраженный масштаб
+        weaponSprite.setScale(-1.5f, 1.5f); 
     }
 }
 

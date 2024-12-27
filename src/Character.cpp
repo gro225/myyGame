@@ -69,9 +69,9 @@ const sf::Sprite& Character::getWeaponSprite() const {
 }
 
 void Character::draw(sf::RenderTarget& target) const {
-    target.draw(sprite); // Отрисовка персонажа
+    target.draw(sprite); 
     if (currentWeapon) {
-        currentWeapon->draw(target,sf::Vector2f(sprite.getPosition().x+20.f,sprite.getPosition().y+10.f)); // Отрисовка оружия
+        currentWeapon->draw(target,sf::Vector2f(sprite.getPosition().x+20.f,sprite.getPosition().y+10.f)); 
     }
 }
 

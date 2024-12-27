@@ -6,7 +6,7 @@ Dungeon::Dungeon(const sf::Texture& texture, const sf::Vector2f& position, const
     completed(false) { 
     sprite.setTexture(texture);
     sprite.setTextureRect(rect); 
-    sprite.setPosition(position); // Устанавливаем стартовую позицию
+    sprite.setPosition(position); 
     bounds = sprite.getGlobalBounds();
 }
 
@@ -22,7 +22,7 @@ const sf::FloatRect& Dungeon::getBounds() const {
 
 void Dungeon::setGlobalPosition(const sf::Vector2f& position) {
     globalPosition = position;
-    updateRenderPosition(0.0f, 0.0f); // Обновляем отображаемую позицию
+    updateRenderPosition(0.0f, 0.0f); 
 }
 
 sf::Vector2f Dungeon::getGlobalPosition() const {

@@ -371,7 +371,7 @@ void Game::showEndGameScreen() {
     }
     sf::Sprite sprite(texture);
 
-    // Масштабируем картинку под размер окна
+    // Масштабируем под размер окна
     float scaleX = static_cast<float>(window.getSize().x) / texture.getSize().x;
     float scaleY = static_cast<float>(window.getSize().y) / texture.getSize().y;
     sprite.setScale(sf::Vector2<float>(scaleX, scaleY));
