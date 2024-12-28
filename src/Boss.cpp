@@ -27,7 +27,7 @@ Boss::Boss(const sf::Texture& texture,
       attackAnimation(sprite, attackFrames, frameDuration),
       hitAnimation(sprite, hitFrames, frameDuration),
       deathAnimation(sprite, deathFrames, frameDuration) {
-    sprite.setScale(3.0f, 3.0f); 
+    sprite.setScale(2.0f, 2.0f); 
 }
 
 void Boss::update(float deltaTime, GameMap& gameMap, int windowWidth, int windowHeight, const sf::Vector2f& playerPosition) {

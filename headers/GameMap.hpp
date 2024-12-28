@@ -18,7 +18,7 @@ public:
     GameMap(int width, int height, int tileSize,  sf::Texture& texture);
 
     void draw(sf::RenderWindow& window) const;
-    void loadDungeonTexture(const std::string& filePath); подземелья
+    void loadDungeonTexture(const std::string& filePath); 
     bool checkCollision(const sf::Sprite& sprite) const;
     void applyOffset() ;
     std::vector<Weapon>& getDroppedItems();

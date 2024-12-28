@@ -3,26 +3,20 @@
 
 Boss1::Boss1(const sf::Texture& texture)
     : Boss(texture, {
-        sf::IntRect(24, 16, 42, 56),
-        sf::IntRect(106, 64, 56, 40),
-        sf::IntRect(190, 64, 56, 40),
-        sf::IntRect(274, 64, 56, 40),
-        sf::IntRect(358, 64, 56, 40)
+        sf::IntRect(24, 16, 56, 56),
+        sf::IntRect(120, 16, 56, 56),
+        sf::IntRect(216, 16, 56, 56),
+        sf::IntRect(312, 16, 56, 56),
+        sf::IntRect(408, 16, 56, 56)
     },{
-        sf::IntRect(56, 64, 56, 40),
-        sf::IntRect(192, 64, 56, 40),
-        sf::IntRect(344, 64, 56, 40),
-        sf::IntRect(496, 64, 56, 40),
-        sf::IntRect(648, 64, 56, 40),
-        sf::IntRect(802, 64, 56, 40),
-        sf::IntRect(952, 64, 56, 40), 
-        sf::IntRect(1104, 64, 56, 40), 
-        sf::IntRect(952, 64, 56, 40),
-        sf::IntRect(802, 64, 56, 40), 
-        sf::IntRect(648, 64, 56, 40), 
-        sf::IntRect(496, 64, 56, 40),
-        sf::IntRect(344, 64, 56, 40), 
-        sf::IntRect(192, 64, 56, 40)
+        sf::IntRect(24, 112, 56, 56),
+        sf::IntRect(120, 112, 56, 56),
+        sf::IntRect(216, 112, 56, 56),
+        sf::IntRect(312, 112, 56, 56),
+        sf::IntRect(408, 112, 56, 56),
+        sf::IntRect(504, 112, 56, 56),
+        sf::IntRect(600, 112, 56, 56), 
+        sf::IntRect(696, 112, 56, 56)
     },{
         sf::IntRect(56, 208, 48, 48),
         sf::IntRect(200, 208, 48, 48), 
