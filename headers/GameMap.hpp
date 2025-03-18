@@ -26,23 +26,39 @@ public:
 
     void setDungeons(std::vector<std::unique_ptr<Dungeon>> dungeons);
     
-    void setStateOfDangeon(bool state);
+    void  setStateOfDungeon(bool state);
 
-    bool checkCollision(const sf::Vector2f& nextPosition);
+    bool checkCollision(const sf::Vector2f& nextPosition, const sf::Vector2f& size);
+    bool canSpawnMonster(int x, int y);
+
+    sf::Color getPixelColorAtPosition(const sf::Vector2f& position);
+    int getWidth() const ;
+    int getHeight() const ;
+    int getTileSize() const;
+    
 
     sf::Image getImage() const;
+
+    void resetToIsland();
+    const sf::Sprite& getBackgroundSprite() const;
 
     
 
 private:
     int width, height, tileSize;
     std::vector<std::vector<int>> mapData;
+    std::vector<std::vector<int>> collisionMap;
+    std::vector<std::vector<bool>> spawnMap;
     sf::Texture& texture;
 
     sf::Texture islandTexture;
     sf::Texture dungeonTexture; 
-    sf::Sprite dungeonSprite;  
+    sf::Sprite dungeonSprite;
+    sf::Sprite backgroundSprite;
     sf::Image mapImage;
+    sf::Texture backgroundTexture;
+    sf::Image backgroundImage;
+
     bool isDungeon = false;     
 
     std::vector<std::unique_ptr<Dungeon>> dungeons;

@@ -1,9 +1,9 @@
 #include "../headers/Weapon.hpp"
 
 Weapon::Weapon(int damage, float attackSpeed, const sf::Texture& weaponTexture)
-    : damage(damage), attackSpeed(attackSpeed) {
+    : damage(damage), attackSpeed(attackSpeed)  {
     weaponSprite.setTexture(weaponTexture);
-     weaponSprite.setScale(0.15f, 0.15f);
+    weaponSprite.setScale(0.15f, 0.15f);
     
 }
 
@@ -32,6 +32,20 @@ float Weapon::getAttackSpeed() const {
 
 sf::Sprite& Weapon::getSprite() {
     return weaponSprite;
+}
+
+void Weapon::setGlobalPosition(const sf::Vector2f& position) {
+    globalPosition = position;
+    weaponSprite.setPosition(globalPosition);
+}
+
+sf::Vector2f Weapon::getGlobalPosition() const {
+    return globalPosition;
+}
+
+void Weapon::updateRenderPosition(float offsetX, float offsetY) {
+    weaponSprite.setPosition(sf::Vector2f(globalPosition.x - offsetX, globalPosition.y - offsetY));
+    bounds = sprite.getGlobalBounds(); 
 }
 
 

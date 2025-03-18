@@ -11,7 +11,7 @@ class Character;
 
 class Monster : public Entity {
 public:
-    using AnimationState = ::AnimationState; // Импортируем в область видимости Monster
+    using AnimationState = ::AnimationState; 
     Monster(const sf::Texture& texture, const std::vector<sf::IntRect>& idleFrames, const std::vector<sf::IntRect>& walkFrames, const std::vector<sf::IntRect>& attackFrames, const std::vector<sf::IntRect>& hitFrames, const std::vector<sf::IntRect>& deathFrames, float frameDuration);
 
     virtual void update(float deltaTime, GameMap& gameMap, int windowWidth, int windowHeight, const sf::Vector2f& playerPosition); 
@@ -28,8 +28,10 @@ public:
     bool isDead() const;
     void setGlobalPosition(const sf::Vector2f& position);
     sf::Vector2f getGlobalPosition() const;
-
-void updatePosition(const sf::Vector2f& mapOffset);
+    void updatePosition(float offsetX, float offsetY); 
+    bool isRecentlyHit() const { return recentlyHit; }
+    void setRecentlyHit(bool value) { recentlyHit = value; hitTimer = 0.f; }
+    void wander(float deltaTime);
     
 
 protected:
@@ -49,6 +51,19 @@ protected:
     float frameDuration;
     float elapsedTime;
 
+    bool recentlyHit = false;
+    float hitCooldown = 0.5f; 
+    float hitTimer = 0.f;
+
+    float wanderTime;
+    float wanderCooldown;
+    bool isWandering;
+    sf::Vector2f wanderDirection;
+    float wanderMoveTime;
+    float wanderMoveDuration;
+    float wanderSpeed;
+
+
     size_t currentFrame;
     std::vector<sf::IntRect> idleFrames;
     std::vector<sf::IntRect> attackFrames;
@@ -59,7 +74,7 @@ protected:
     float getDistanceToCharacter(const Character& character) const;
     AnimationState getCurrentAnimation() const;
 
-    bool isAttacking = false;
+    bool isAnimationPlaying = false;
 
     float attackRange = 5.0f;
     float chaseRange = 200.0f; 

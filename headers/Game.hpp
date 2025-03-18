@@ -30,7 +30,8 @@ private:
     void processEvents();
     void update(float deltaTime);
     void render();
-    void spawnMonster();
+    void spawnMonsters();
+    void spawnDungeon();
     void spawnBoss();
     void showEndGameScreen();
     void showVictoryScreen();

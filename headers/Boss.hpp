@@ -25,6 +25,14 @@ public:
     void takeDamage(int damage, float deltaTime);
     int getAttackPower() const ;
     AnimationState getCurrentAnimation() const;
+    void setGlobalPosition(const sf::Vector2f& position);
+    sf::Vector2f getGlobalPosition() const;
+    void updatePosition(float offsetX, float offsetY);
+    void attack(float deltaTime);
+    bool isRecentlyHit() const { return recentlyHit; }
+    void setRecentlyHit(bool value) { recentlyHit = value; hitTimer = 0.f; }
+    void wander(float deltaTime);
+    
 
 
 
@@ -41,6 +49,18 @@ private:
     bool dead;
     float attackCooldown;
     float attackTimer;
+    bool recentlyHit = false;
+    float hitCooldown = 0.5f; 
+    float hitTimer = 0.f;
+
+    float wanderTime;
+    float wanderCooldown;
+    bool isWandering;
+    sf::Vector2f wanderDirection;
+    float wanderMoveTime;
+    float wanderMoveDuration;
+    float wanderSpeed;
+    bool isAnimationPlaying = false;
 	Animation idleAnimation;            
     Animation walkAnimation;       
     Animation attackAnimation;      
@@ -51,7 +71,9 @@ private:
     std::vector<sf::IntRect> attackFrames;
     std::vector<sf::IntRect> walkFrames;
     std::vector<sf::IntRect> hitFrames;
-    std::vector<sf::IntRect> deathFrames; 
+    std::vector<sf::IntRect> deathFrames;
+    sf::Vector2f globalPosition;
+    sf::FloatRect bounds;
 };
 
 #endif // BOSS_HPP

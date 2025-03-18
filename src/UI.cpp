@@ -1,5 +1,6 @@
 #include "../headers/UI.hpp"
 
+
 UI::UI(float windowWidth, float windowHeight)
     : windowWidth(windowWidth), 
       windowHeight(windowHeight),
@@ -35,11 +36,13 @@ void UI::updateWeaponSprite(const sf::Sprite& newWeaponSprite) {
 }
 
 void UI::updateHealthBar() {
+    float width = std::min(static_cast<float>(currentHealth) * 2.0f, 200.f);
+    healthBar.setSize(sf::Vector2f(width, 20.f));
     float healthRatio = static_cast<float>(currentHealth) / static_cast<float>(maxHealth);
-    healthBar.setSize(sf::Vector2f(200.f * healthRatio, 20.f));
-    if (healthRatio > 0.5f) {
+   
+    if (healthRatio > 25) {              
         healthBar.setFillColor(sf::Color::Green);
-    } else if (healthRatio > 0.2f) {
+    } else if (healthRatio > 10) {      
         healthBar.setFillColor(sf::Color::Yellow);
     } else {
         healthBar.setFillColor(sf::Color::Red);

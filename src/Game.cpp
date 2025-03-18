@@ -5,8 +5,8 @@ int dungeonCounter = 0;
 sf::Vector2f dungeonEntryPoint;
 
 sf::Vector2f getRandomPositionNearCharacter(const Character& character, float radius) {
-    float angle = static_cast<float>(std::rand()) / RAND_MAX * 2 * 3.14159f; // Случайный угол
-    float distance = static_cast<float>(std::rand()) / RAND_MAX * radius; // Случайное расстояние в пределах радиуса
+    float angle = static_cast<float>(std::rand()) / RAND_MAX * 2 * 3.14159f; 
+    float distance = static_cast<float>(std::rand()) / RAND_MAX * radius; 
 
     float x = character.getPosition().x + distance * std::cos(angle);
     float y = character.getPosition().y + distance * std::sin(angle);
@@ -19,6 +19,9 @@ Game::Game(int windowWidth, int windowHeight)
       character(characterTexture, {sf::IntRect(0, 0, 32, 32),sf::IntRect(32,0, 32, 32),sf::IntRect(64, 0, 32, 32),sf::IntRect(96, 0, 32, 32), sf::IntRect(128, 0, 32, 32),sf::IntRect(160, 0, 32, 32)},{sf::IntRect(0, 0, 32, 32),sf::IntRect(0,128, 32, 32),sf::IntRect(32, 0, 32, 32),sf::IntRect(32, 128, 32, 32), sf::IntRect(64, 0, 32, 32),sf::IntRect(64, 128, 32, 32), sf::IntRect(96, 0, 32, 32),sf::IntRect(96, 128, 32, 32),sf::IntRect(128, 0, 32, 32),sf::IntRect(128, 128, 32, 32),sf::IntRect(160, 0, 32, 32),sf::IntRect(160, 128, 32, 32)}, {sf::IntRect(0, 32 * 7, 32, 32),sf::IntRect(32,32 * 7, 32, 32),sf::IntRect(64, 32 * 7, 32, 32),sf::IntRect(96, 32 * 7, 32, 32), sf::IntRect(128, 32 * 7, 32, 32),sf::IntRect(160, 32 * 7, 32, 32),},{sf::IntRect(0, 32 * 6, 32, 32),sf::IntRect(32,32 * 6, 32, 32),sf::IntRect(64, 32 * 6, 32, 32),sf::IntRect(96, 32 * 6, 32, 32)},{sf::IntRect(0, 32 * 5, 32, 32),sf::IntRect(32,32 * 5, 32, 32),sf::IntRect(64, 32 * 5, 32, 32),sf::IntRect(96, 32 * 5, 32, 32), sf::IntRect(128, 32 * 5, 32, 32),sf::IntRect(160, 32 * 5, 32, 32),sf::IntRect(196, 32 * 5, 32, 32),sf::IntRect(224,32 * 5, 32, 32),sf::IntRect(256, 32 * 5, 32, 32),sf::IntRect(288, 32 * 5, 32, 32)}, 0.2f),
       gameMap(800, 600, 32, mapTexture), playerUI(120,120){
     std::srand(static_cast<unsigned int>(std::time(nullptr)));
+    std::vector<std::unique_ptr<Dungeon>> dungeons;
+    character.setPosition(sf::Vector2f(100.0f, 100.0f));
+    spawnDungeon();
     loadTextures();
     initialize();
 }
@@ -55,21 +58,9 @@ void Game::initialize() {
     character.sprite.setScale(2.0f, 2.0f);
     UI playerUI(windowWidth, windowHeight);
 
-	 // Генерация подземелий
-     if (dungeons.empty()) {
-        for (int i = 0; i < 3; ++i) {
-            sf::Vector2f dungeonPosition = sf::Vector2f(
-                std::rand() % (windowWidth - 100),
-                std::rand() % (windowHeight - 100)
-            );
-            dungeons.emplace_back(std::make_unique<Dungeon>(
-            dungeon, dungeonPosition, sf::IntRect(16 * 8, 42 * 8, 12 * 8, 18 * 8)));
-        }
-    }
-
-    for (int i = 0; i < 5; ++i) {
-        spawnMonster();
-        monsters.back()->setPosition(getRandomPositionNearCharacter(character, 300.0f));
+    for (int i = 0; i < 20; ++i) {
+        spawnMonsters();
+        // monsters.back()->setGlobalPosition(getRandomPositionNearCharacter(character, 300.0f));
     }
 }
 
@@ -82,9 +73,14 @@ void Game::processEvents() {
 }
 
 void Game::update(float deltaTime) {
+    // Обновляем здоровье
+    playerUI.updatePlayerHealth(character.getCurrentHealth(), character.getMaxHealth());
+    
     if (!inDungeon) {
         // Обновляем персонажа
         character.update(deltaTime, gameMap, windowWidth, windowHeight);
+
+        // Подбор оружия
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::R)) {
             for (auto it = weaponsOnMap.begin(); it != weaponsOnMap.end(); ) {
                 if (character.getSprite().getGlobalBounds().intersects((*it)->getSprite().getGlobalBounds())) {
@@ -95,15 +91,17 @@ void Game::update(float deltaTime) {
                         droppedWeapon->getSprite().setPosition(character.getSprite().getPosition());
                         weaponsOnMap.push_back(std::move(droppedWeapon));
                     }
-                    break;}
-                else {++it;}
+                    break;
+                } else {
+                    ++it;
+                }
             }
         }
 
         // Проверяем взаимодействие персонажа с подземельями
         for (const auto& dungeon : dungeons) {
             if (character.sprite.getGlobalBounds().intersects(dungeon->getBounds())) {
-                if(dungeon->getVisible()){
+                if (dungeon->getVisible()) {
                     enterDungeon();
                 }
                 break;
@@ -114,108 +112,104 @@ void Game::update(float deltaTime) {
         for (auto it = monsters.begin(); it != monsters.end(); ) {
             (*it)->update(deltaTime, gameMap, windowWidth, windowHeight, character.getPosition());
             character.checkCollisionWith(**it, deltaTime);
-            if (character.isDead()){
+            if (character.isDead()) {
                 showEndGameScreen();
                 return;
             }
-
             if ((*it)->isDead()) {
-                dropWeapon((*it)->getPosition());
+                dropWeapon((*it)->getGlobalPosition());
                 it = monsters.erase(it);
-                spawnMonster();
+                spawnMonsters();
+            } else {
+                ++it;
             }
-            else ++it;
         }
 
         for (auto& dungeon : dungeons) {
             dungeon->updateRenderPosition(gameMap.offsetX, gameMap.offsetY);
         }
-        // for (auto& monster : monsters) {
-        //     monster->update(monster->getGlobalPosition());
-        // }
-        // for (auto& weapon : weapons) {
-        //     weapon->updateRenderPosition(gameMap.offsetX, gameMap.offsetY);
-        // }
-        // for (auto& boss : bosses) {
-        //     boss->updateRenderPosition(gameMap.offsetX, gameMap.offsetY);
-        // }
-    } 
-    else {
-        // Обновление персонажа в подземелье
+
+        for (auto& monster : monsters) {
+            monster->updatePosition(gameMap.offsetX, gameMap.offsetY);
+        }
+
+        for (auto& weapon : weaponsOnMap) {
+            weapon->updateRenderPosition(gameMap.offsetX, gameMap.offsetY);
+        }
+    
+    } else {
         character.update(deltaTime, gameMap, windowWidth, windowHeight);
+        playerUI.updatePlayerHealth(character.getCurrentHealth(), character.getMaxHealth());
+        
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::R)) {
-            for (auto it = weaponsOnMap.begin(); it != weaponsOnMap.end(); /* пусто */) {
+            for (auto it = weaponsOnMap.begin(); it != weaponsOnMap.end();) {
                 if (character.getSprite().getGlobalBounds().intersects((*it)->getSprite().getGlobalBounds())) {
                     std::unique_ptr<Weapon> droppedWeapon = character.equipWeapon(std::move(*it));
+                    playerUI.updateWeaponSprite(character.getWeaponSprite());
                     it = weaponsOnMap.erase(it);
                     if (droppedWeapon) {
                         droppedWeapon->getSprite().setPosition(character.getSprite().getPosition());
                         weaponsOnMap.push_back(std::move(droppedWeapon));
                     }
-                    break;}
-                else {++it;}
+                    break;
+                } else {
+                    ++it;
+                }
             }
         }
         
-
-
         // Обновляем монстров
-        for (auto it = monsters.begin(); it != monsters.end(); ) {
+        for (auto it = monsters.begin(); it != monsters.end();) {
             (*it)->update(deltaTime, gameMap, windowWidth, windowHeight, character.getPosition());
             character.checkCollisionWith(**it, deltaTime);
-            if (character.isDead()){
+            if (character.isDead()) {
                 showEndGameScreen();
                 return;
             }
-
             if ((*it)->isDead()) {
                 dropWeapon((*it)->getPosition());
                 it = monsters.erase(it);
-                spawnMonster();
-            } 
-            else ++it;
-            
+                spawnMonsters();
+            } else {
+                ++it;
+            }
         }
 
-        //Обновляем Босса
-        for (auto it = bosses.begin(); it != bosses.end(); ) {
+        // Обновляем босса
+        for (auto it = bosses.begin(); it != bosses.end();) {
             (*it)->update(deltaTime, gameMap, windowWidth, windowHeight, character.getPosition());
             character.checkCollisionWithBoss(**it, deltaTime);
-
-            if (character.isDead()){
+            if (character.isDead()) {
                 showEndGameScreen();
                 return;
             }
-
             if ((*it)->isDead()) {
                 it = bosses.erase(it);
                 exitDungeon();
-            } 
-            else ++it;
-            
+            } else {
+                ++it;
+            }
         }
-        // for (auto& monster : monsters) {
-        //     monster->update(monster->getGlobalPosition());
-        // }
-        // for (auto& weapon : weapons) {
-        //     weapon->updateRenderPosition(gameMap.offsetX, gameMap.offsetY);
-        // }
-        // for (auto& boss : bosses) {
-        //     boss->updateRenderPosition(gameMap.offsetX, gameMap.offsetY);
-        // }
-        
+
+        for (auto& monster : monsters) {
+            monster->updatePosition(gameMap.offsetX, gameMap.offsetY);
+        }
+        for (auto& weapon : weaponsOnMap) {
+            weapon->updateRenderPosition(gameMap.offsetX, gameMap.offsetY);
+        }
+        for (auto& boss : bosses) {
+            boss->updatePosition(gameMap.offsetX, gameMap.offsetY);
+        }
     }
 }
 
 
+
 void Game::render() {
     window.clear();
+    // window.draw(gameMap.getBackgroundSprite());
     gameMap.draw(window);
     character.draw(window);
-    // currentWeapon.draw(window);
-    for (const auto& weapon : weaponsOnMap) {
-    window.draw(weapon->getSprite());
-    }
 
 
 	 for (const auto& dungeon : dungeons) {
@@ -230,12 +224,16 @@ void Game::render() {
         boss->draw(window);
     }
     playerUI.draw(window);
+    for (const auto& weapon : weaponsOnMap) {
+        window.draw(weapon->getSprite());
+        }
     window.display();
 }
 
 void Game::enterDungeon() {
     inDungeon = true;
     monsters.clear();
+    weaponsOnMap.clear();
     dungeonCounter++;
 
     for (const auto& dungeon : dungeons) {
@@ -250,29 +248,48 @@ void Game::enterDungeon() {
     }
 
     std::string dungeonTexturePath;
+
     switch (dungeonCounter) {
-        case 1: dungeonTexturePath = "../resources/Dungeons/dungeon1.png"; break;
-        case 2: dungeonTexturePath = "../resources/Dungeons/dungeon2.png"; break;
-        case 3: dungeonTexturePath = "../resources/Dungeons/dungeon3.png"; break;
-        default: 
+        case 1:
+            dungeonTexturePath = "../resources/Dungeons/dungeon1.png";
+            character.setPosition(sf::Vector2f(400.0f, 280.0f));
+            break;
+        case 2:
+            dungeonTexturePath = "../resources/Dungeons/dungeon2.png";
+            character.setPosition(sf::Vector2f(120.0f, 367.0f));
+            break;
+        case 3:
+            dungeonTexturePath = "../resources/Dungeons/dungeon3.png";
+            character.setPosition(sf::Vector2f(270.0f, 280.0f));
+            break;
+        default:
             showVictoryScreen();
             return;
     }
+
     gameMap.loadDungeonTexture(dungeonTexturePath);
-    character.setPosition(sf::Vector2f(200.0f, 200.0f));
-    for (int i = 0; i < 5; ++i) {
-        spawnMonster();
-        monsters.back()->setPosition(getRandomPositionNearCharacter(character, 150.0f));
+
+    for (int i = 0; i < 20; ++i) {
+        spawnMonsters();
     }
     spawnBoss();
-    bosses.back()->setPosition(getRandomPositionNearCharacter(character, 150.0f));
+    
 }
+
 
 void Game::exitDungeon() {
     inDungeon = false;
-    gameMap.setStateOfDangeon(false);
+    gameMap.setStateOfDungeon(false);
+    gameMap.resetToIsland(); 
     monsters.clear();
+    bosses.clear();
+    weaponsOnMap.clear();
+    window.clear();
+    
     gameMap.draw(window);
+    window.display();
+    
+    
     for (auto& dungeon : dungeons) {
         if (dungeon->getBounds().getPosition() == dungeonEntryPoint) {
             dungeon->setVisible(false); 
@@ -281,50 +298,114 @@ void Game::exitDungeon() {
             dungeon->setVisible(true);
         }
     }
+    
     if (dungeonCounter == 3){
         showVictoryScreen();
         return;
     }
-
+    
+    gameMap.offsetX = 0;
+    gameMap.offsetY = 0;
+    
     initialize();
-        
 }
 
-void Game::spawnMonster() {
-    int type = rand() % 4; 
-    sf::Vector2f monsterPosition = getRandomPositionNearCharacter(character, 150.0f);
 
-    switch (type) {
-        case 0: monsters.emplace_back(std::make_unique<Eye>(eyeTexture)); break;
-        case 1: monsters.emplace_back(std::make_unique<Goblin>(goblinTexture)); break;
-        case 2: monsters.emplace_back(std::make_unique<Mushroom>(mushroomTexture)); break;
-        case 3: monsters.emplace_back(std::make_unique<Skeleton>(skeletonTexture)); break;
+
+void Game::spawnDungeon() {
+    for (int i = 0; i < 3; ++i) {
+        sf::Vector2f dungeonPosition;
+        sf::IntRect dungeonBounds;
+        bool validPosition;
+        
+        do {
+            validPosition = true;
+            dungeonPosition = sf::Vector2f(
+                std::rand() % (windowWidth - 100),
+                std::rand() % (windowHeight - 100)
+            );
+            dungeonBounds = sf::IntRect(dungeonPosition.x, dungeonPosition.y, 12 * 8, 18 * 8);
+            
+            for (const auto& existingDungeon : dungeons) {
+                sf::IntRect existingBounds(
+                    existingDungeon->getPosition().x, 
+                    existingDungeon->getPosition().y, 
+                    12 * 8, 18 * 8
+                );
+                if (dungeonBounds.intersects(existingBounds) && sf::FloatRect(dungeonBounds).intersects(character.sprite.getGlobalBounds())) {
+                    validPosition = false;
+                    break;
+                }
+            }
+        } while (!validPosition);
+        
+        dungeons.emplace_back(std::make_unique<Dungeon>(
+            dungeon, dungeonPosition, sf::IntRect(16 * 8, 42 * 8, 12 * 8, 18 * 8)));
     }
 
-    monsters.back()->setPosition(monsterPosition);
 }
 
+void Game::spawnMonsters() {
+    int x, y;
+    // Повторяем, пока не найдём подходящую клетку для спавна
+    do {
+        x = rand() % gameMap.getWidth();
+        y = rand() % gameMap.getHeight();
+    } while (!gameMap.canSpawnMonster(x, y));
+    
+    // Вычисляем мировые координаты на основе размера тайла
+    sf::Vector2f spawnPos(x * gameMap.getTileSize(), y * gameMap.getTileSize());
+
+    // Выбираем тип монстра случайным образом
+    int type = rand() % 4;
+    std::unique_ptr<Monster> newMonster;
+    switch (type) {
+        case 0:
+            newMonster = std::make_unique<Eye>(eyeTexture);
+            break;
+        case 1:
+            newMonster = std::make_unique<Goblin>(goblinTexture);
+            break;
+        case 2:
+            newMonster = std::make_unique<Mushroom>(mushroomTexture);
+            break;
+        case 3:
+            newMonster = std::make_unique<Skeleton>(skeletonTexture);
+            break;
+    }
+    
+    // Если монстр успешно создан, устанавливаем его позицию и добавляем в вектор
+    if (newMonster) {
+        newMonster->setGlobalPosition(spawnPos);
+        newMonster->setPosition(spawnPos);
+        monsters.push_back(std::move(newMonster));
+    }
+}
+
+
 void Game::spawnBoss() {
-    sf::Vector2f bossPosition(400.0f, 300.0f);
+    sf::Vector2f bossPosition1(800.0f, 700.0f);
+    sf::Vector2f bossPosition2(640.0f, 580.0f);
+    sf::Vector2f bossPosition3(800.0f, 700.0f);
 
     switch (dungeonCounter) {
         case 1: 
             bosses.emplace_back(std::make_unique<Boss1>(boss1));
-            bosses.back()->setPosition(bossPosition);
+            bosses.back()->setGlobalPosition(bossPosition1);
             break;
         case 2: 
             bosses.emplace_back(std::make_unique<Boss2>(boss2));
-            bosses.back()->setPosition(bossPosition);
+            bosses.back()->setGlobalPosition(bossPosition2);
             break;
         case 3: 
             bosses.emplace_back(std::make_unique<Boss3>(boss3));
-            bosses.back()->setPosition(bossPosition);
+            bosses.back()->setGlobalPosition(bossPosition3);
             break;
     }
 }
 
 void Game::dropWeapon(const sf::Vector2f& position) {
-    if (rand() % 100 < 10) { 
+    if (rand() % 100 < 40) { 
         int type = rand() % 4; 
         switch (type) {
             case 0: weaponsOnMap.emplace_back(std::make_unique<Weapon>(25,20.f,weapon1Texture));break;
@@ -332,8 +413,7 @@ void Game::dropWeapon(const sf::Vector2f& position) {
             case 2: weaponsOnMap.emplace_back(std::make_unique<Weapon>(25,20.f,weapon3Texture)); break;
             case 3: weaponsOnMap.emplace_back(std::make_unique<Weapon>(25,20.f,weapon4Texture)); break;
         }
-
-        weaponsOnMap.back()->getSprite().setPosition(position);
+        weaponsOnMap.back()->setGlobalPosition(position);
     }
 }
 
@@ -388,6 +468,8 @@ void Game::showEndGameScreen() {
         }
     }
 }
+
+
 
 
 

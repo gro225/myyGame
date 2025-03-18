@@ -17,6 +17,7 @@ public:
     bool getVisible() const;
     void setCompleted(bool isComleted);
     bool getCompleted() const;
+    sf::Vector2f getPosition() const;
 
 private:
     sf::Sprite sprite;

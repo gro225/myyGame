@@ -53,3 +53,7 @@ bool Dungeon::getCompleted() const {
     return completed;
 }
 
+sf::Vector2f Dungeon::getPosition() const {
+    return sprite.getPosition(); 
+}
+

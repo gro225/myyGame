@@ -6,6 +6,7 @@
 #include <vector>
 
 class Character;
+class Monsrer;
 
 class Weapon {
 public:
@@ -14,12 +15,14 @@ public:
 
     void draw(sf::RenderTarget& window, const sf::Vector2f& position);
 
-    // void update(float deltaTime);
 
     int getDamage() const;
     float getAttackSpeed() const;
     sf::Sprite& getSprite();
     void updatePosition(const sf::Vector2f& characterPosition, bool facingRight);
+    void setGlobalPosition(const sf::Vector2f& position);
+    sf::Vector2f getGlobalPosition() const;
+    void updateRenderPosition(float offsetX, float offsetY); 
 
 private:
     int damage;
@@ -29,6 +32,9 @@ private:
     sf::Sprite weaponSprite;
     Character* owner;
     std::vector<Weapon>& getDroppedItems();
+
+    sf::FloatRect bounds;
+    sf::Vector2f globalPosition;
 };
 
 #endif // WEAPON_HPP
