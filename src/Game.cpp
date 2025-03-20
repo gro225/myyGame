@@ -234,6 +234,7 @@ void Game::enterDungeon() {
     inDungeon = true;
     monsters.clear();
     weaponsOnMap.clear();
+    character.enterDungeon(character.getPosition());
     dungeonCounter++;
 
     for (const auto& dungeon : dungeons) {
@@ -306,6 +307,8 @@ void Game::exitDungeon() {
     
     gameMap.offsetX = 0;
     gameMap.offsetY = 0;
+
+    character.exitDungeon();
     
     initialize();
 }
@@ -347,16 +350,15 @@ void Game::spawnDungeon() {
 
 void Game::spawnMonsters() {
     int x, y;
-    // Повторяем, пока не найдём подходящую клетку для спавна
     do {
         x = rand() % gameMap.getWidth();
         y = rand() % gameMap.getHeight();
     } while (!gameMap.canSpawnMonster(x, y));
     
-    // Вычисляем мировые координаты на основе размера тайла
+   
     sf::Vector2f spawnPos(x * gameMap.getTileSize(), y * gameMap.getTileSize());
 
-    // Выбираем тип монстра случайным образом
+    
     int type = rand() % 4;
     std::unique_ptr<Monster> newMonster;
     switch (type) {
@@ -374,7 +376,7 @@ void Game::spawnMonsters() {
             break;
     }
     
-    // Если монстр успешно создан, устанавливаем его позицию и добавляем в вектор
+   
     if (newMonster) {
         newMonster->setGlobalPosition(spawnPos);
         newMonster->setPosition(spawnPos);
@@ -385,7 +387,7 @@ void Game::spawnMonsters() {
 
 void Game::spawnBoss() {
     sf::Vector2f bossPosition1(800.0f, 700.0f);
-    sf::Vector2f bossPosition2(640.0f, 580.0f);
+    sf::Vector2f bossPosition2(560.0f, 620.0f);
     sf::Vector2f bossPosition3(800.0f, 700.0f);
 
     switch (dungeonCounter) {

@@ -17,13 +17,10 @@ Goblin::Goblin(const sf::Texture& texture)
         sf::IntRect(968, 208, 40, 56),
         sf::IntRect(1112, 208, 40, 56)
     },{
-        sf::IntRect(56, 304, 40, 56), 
-        sf::IntRect(208, 304, 40, 56), 
-        sf::IntRect(360, 304, 40, 56), 
-        sf::IntRect(504, 304, 40, 56), 
-        sf::IntRect(656, 304, 40, 56), 
-        sf::IntRect(808, 304, 12 * 8, 56), 
-        sf::IntRect(928, 304, 11 * 8, 56)
+        sf::IntRect(56, 64, 40, 40), 
+       sf::IntRect(208, 64, 40, 40), 
+       sf::IntRect(352, 64, 40, 40),
+       sf::IntRect(504, 64, 40, 40)
     },{
         sf::IntRect(56, 64, 400, 56),
         sf::IntRect(208, 64, 400, 56),

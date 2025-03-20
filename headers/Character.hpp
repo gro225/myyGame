@@ -39,6 +39,8 @@ public:
     void draw(sf::RenderTarget& target) const;
     int getCurrentHealth() const;
     int getMaxHealth() const ;
+    void enterDungeon(sf::Vector2f newInsidePosition);
+    void exitDungeon();
 private:
     std::vector<sf::IntRect> idleFrames;
     std::vector<sf::IntRect> walkFrames;
@@ -67,6 +69,7 @@ private:
     bool isRecentlyHit = false;  
     float hitTimer = 0.0f;      
     const float hitCooldown = 0.5f; 
+    sf::Vector2f lastOutsidePosition;
 
 };
 

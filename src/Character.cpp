@@ -244,3 +244,11 @@ int Character::getCurrentHealth() const {
 int Character::getMaxHealth() const {
     return maxHealth;
 }
+
+void Character::enterDungeon(sf::Vector2f newInsidePosition) {
+    lastOutsidePosition = newInsidePosition; 
+}
+
+void Character::exitDungeon() {
+    sprite.setPosition(lastOutsidePosition); // Возвращение на сохранённую позицию
+}
