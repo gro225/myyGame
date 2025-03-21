@@ -335,7 +335,7 @@ void Game::spawnDungeon() {
                     existingDungeon->getPosition().y, 
                     12 * 8, 18 * 8
                 );
-                if (dungeonBounds.intersects(existingBounds) && sf::FloatRect(dungeonBounds).intersects(character.sprite.getGlobalBounds())) {
+                if (dungeonBounds.intersects(existingBounds) || sf::FloatRect(dungeonBounds).intersects(character.sprite.getGlobalBounds())) {
                     validPosition = false;
                     break;
                 }
@@ -424,7 +424,6 @@ void Game::showVictoryScreen() {
     if (!texture.loadFromFile("../resources/Win.jpg")) {
         throw std::runtime_error("Failed to load font");
     }
-    // // Создаем спрайт с текстурой
     sf::Sprite sprite(texture);
 
     // Масштабируем картинку под размер окна
