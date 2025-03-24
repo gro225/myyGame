@@ -87,14 +87,14 @@ bool GameMap::canSpawnMonster(int x, int y) {
     // Проверяем, свободны ли клетки вокруг
     for (int dx = -margin; dx <= margin; ++dx) {
         for (int dy = -margin; dy <= margin; ++dy) {
-            if (dx == 0 && dy == 0) continue; // Пропускаем центральную клетку (где спауним)
+            if (dx == 0 && dy == 0) continue; 
 
             int checkX = x + dx;
             int checkY = y + dy;
 
             if (checkX >= 0 && checkY >= 0 && checkX < width && checkY < height) {
                 if (!spawnMap[checkY][checkX]) {
-                    return false; // Если хоть одна клетка рядом занята, спаун запрещен
+                    return false; 
                 }
             }
         }

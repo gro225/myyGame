@@ -167,7 +167,7 @@ void Game::update(float deltaTime) {
                 return;
             }
             if ((*it)->isDead()) {
-                dropWeapon((*it)->getPosition());
+                dropWeapon((*it)->getGlobalPosition());
                 it = monsters.erase(it);
                 spawnMonsters();
             } else {
