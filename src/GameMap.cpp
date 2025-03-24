@@ -77,11 +77,35 @@ void GameMap::loadDungeonTexture(const std::string& filePath) {
 }
 
 bool GameMap::canSpawnMonster(int x, int y) {
-    if (x < 0 || y < 0 || x >= width || y >= height) {
-        return false; 
+    constexpr int margin = 2;
+    
+    // Проверяем границы карты
+    if (x < margin || y < margin || x >= width - margin || y >= height - margin) {
+        return false;
     }
-    return spawnMap[y][x]; 
+
+    // Проверяем, свободны ли клетки вокруг
+    for (int dx = -margin; dx <= margin; ++dx) {
+        for (int dy = -margin; dy <= margin; ++dy) {
+            if (dx == 0 && dy == 0) continue; // Пропускаем центральную клетку (где спауним)
+
+            int checkX = x + dx;
+            int checkY = y + dy;
+
+            if (checkX >= 0 && checkY >= 0 && checkX < width && checkY < height) {
+                if (!spawnMap[checkY][checkX]) {
+                    return false; // Если хоть одна клетка рядом занята, спаун запрещен
+                }
+            }
+        }
+    }
+
+    spawnMap[y][x] = false; 
+
+    return true;
 }
+
+
 
 void GameMap::draw(sf::RenderWindow& window) const {
     if (isDungeon) {
